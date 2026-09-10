@@ -1,7 +1,7 @@
 [
   {
     "id": "inc-2026-09-08-01",
-    "title": "Optimasi PgBouncer & Peningkatan Pool Koneksi Database",
+    "title": "Peningkatan Kapasitas & Optimasi Layanan Database",
     "status": "resolved",
     "impact": "minor",
     "created_at": "2026-09-08T02:00:00+07:00",
@@ -11,17 +11,17 @@
       {
         "timestamp": "2026-09-08T02:45:00+07:00",
         "status": "resolved",
-        "body": "Pemeliharaan terjadwal selesai. PgBouncer pooler dinaikkan ke kapasitas 10.000 concurrent connection. Seluruh layanan normal."
+        "body": "Pemeliharaan terjadwal selesai. Kapasitas koneksi basis data berhasil ditingkatkan. Seluruh layanan beroperasi normal."
       },
       {
         "timestamp": "2026-09-08T02:15:00+07:00",
         "status": "monitoring",
-        "body": "Konfigurasi pgbouncer baru diterapkan. Memantau metrik latensi dan koneksi database."
+        "body": "Konfigurasi optimasi baru telah diterapkan. Memantau metrik latensi dan stabilitas koneksi."
       },
       {
         "timestamp": "2026-09-08T02:00:00+07:00",
         "status": "in_progress",
-        "body": "Pemeliharaan rutin terjadwal dimulai untuk tuning parameter PostgreSQL & PgBouncer."
+        "body": "Pemeliharaan rutin terjadwal dimulai untuk penyesuaian parameter dan skalabilitas database."
       }
     ]
   }
