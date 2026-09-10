@@ -582,6 +582,10 @@ func handleIncidents(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 		// Auth check
+		if adminKey == "" || adminKey == "akademihub-status-secret" {
+			http.Error(w, `{"error":"incident write disabled; configure non-default STATUS_ADMIN_KEY"}`, http.StatusForbidden)
+			return
+		}
 		auth := r.Header.Get("Authorization")
 		keyHeader := r.Header.Get("X-Admin-Key")
 		expected := "Bearer " + adminKey
@@ -596,6 +600,10 @@ func handleIncidents(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		if len(strings.TrimSpace(inc.Title)) == 0 || len(inc.Title) > 200 {
+			http.Error(w, `{"error":"title required (1-200 chars)"}`, http.StatusBadRequest)
+			return
+		}
 		if inc.ID == "" {
 			inc.ID = fmt.Sprintf("inc-%d", time.Now().Unix())
 		}
