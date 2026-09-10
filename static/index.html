@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AkademiHub System Status</title>
+  <meta name="description" content="Status operasional real-time seluruh layanan dan infrastruktur AkademiHub." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2310b981'><path d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'/></svg>" />
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-surface: #161b22;
+      --bg-subtle: #21262d;
+      --border: #30363d;
+      --border-hover: #484f58;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --green: #238636;
+      --green-light: #2ea043;
+      --green-subtle: rgba(46, 160, 67, 0.15);
+      --green-border: rgba(46, 160, 67, 0.4);
+      --yellow: #d29922;
+      --yellow-light: #e3b341;
+      --yellow-subtle: rgba(210, 153, 34, 0.15);
+      --yellow-border: rgba(210, 153, 34, 0.4);
+      --red: #da3633;
+      --red-light: #f85149;
+      --red-subtle: rgba(248, 81, 73, 0.15);
+      --red-border: rgba(248, 81, 73, 0.4);
+      --blue: #58a6ff;
+      --card-radius: 8px;
+    }
+
+    html.light {
+      --bg-primary: #f6f8fa;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f0f2f5;
+      --border: #d0d7de;
+      --border-hover: #afb8c1;
+      --text-main: #1f2328;
+      --text-muted: #656d76;
+      --text-dim: #8c959f;
+      --green: #1a7f37;
+      --green-light: #2da44e;
+      --green-subtle: rgba(45, 164, 78, 0.12);
+      --green-border: rgba(45, 164, 78, 0.35);
+      --yellow: #9a6700;
+      --yellow-light: #bf8700;
+      --yellow-subtle: rgba(191, 135, 0, 0.12);
+      --yellow-border: rgba(191, 135, 0, 0.35);
+      --red: #cf222e;
+      --red-light: #fa4549;
+      --red-subtle: rgba(207, 34, 46, 0.12);
+      --red-border: rgba(207, 34, 46, 0.35);
+      --blue: #0969da;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 0 16px;
+      width: 100%;
+    }
+
+    /* Header */
+    header {
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-surface);
+      padding: 14px 0;
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+    }
+    .brand-logo svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-badge {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      background: var(--bg-subtle);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 12px;
+    }
+    .domain-tag {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .theme-btn, .refresh-btn {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      transition: all 0.15s;
+    }
+    .theme-btn:hover, .refresh-btn:hover {
+      background: var(--bg-subtle);
+      border-color: var(--border-hover);
+    }
+
+    /* Main Content */
+    main {
+      flex: 1;
+      padding: 32px 0 48px;
+    }
+
+    /* Hero Status Banner */
+    .status-banner {
+      border-radius: var(--card-radius);
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+    }
+    .status-banner.operational {
+      background: var(--green-subtle);
+      border-color: var(--green-border);
+    }
+    .status-banner.degraded {
+      background: var(--yellow-subtle);
+      border-color: var(--yellow-border);
+    }
+    .status-banner.outage {
+      background: var(--red-subtle);
+      border-color: var(--red-border);
+    }
+    .banner-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .banner-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .operational .banner-icon {
+      background: var(--green);
+      color: white;
+    }
+    .degraded .banner-icon {
+      background: var(--yellow);
+      color: white;
+    }
+    .outage .banner-icon {
+      background: var(--red);
+      color: white;
+    }
+    .banner-text h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 3px;
+    }
+    .banner-text p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .banner-meta {
+      text-align: right;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .live-dot {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #2ea043;
+      margin-right: 4px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 160, 67, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(46, 160, 67, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 160, 67, 0); }
+    }
+
+    /* Metrics Strip */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .metric-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 14px 16px;
+    }
+    .metric-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+    }
+    .metric-val {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+    .metric-sub {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* Component Groups */
+    .group-section {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .group-header {
+      padding: 12px 18px;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .group-count {
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--text-dim);
+    }
+    .component-row {
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .component-row:last-child {
+      border-bottom: none;
+    }
+    .component-row:hover {
+      background: rgba(255, 255, 255, 0.015);
+    }
+    .component-main {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+    .component-info h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 2px;
+    }
+    .component-info p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+    .component-status-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .latency-tag {
+      font-size: 0.75rem;
+      font-family: ui-monospace, monospace;
+      color: var(--text-dim);
+      background: var(--bg-subtle);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    .status-badge {
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .status-badge.operational { color: var(--green-light); }
+    .status-badge.degraded { color: var(--yellow-light); }
+    .status-badge.outage { color: var(--red-light); }
+    .status-indicator-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .operational .status-indicator-dot { background: var(--green); }
+    .degraded .status-indicator-dot { background: var(--yellow); }
+    .outage .status-indicator-dot { background: var(--red); }
+
+    /* 90-Day Uptime Bar */
+    .history-wrap {
+      margin-top: 10px;
+    }
+    .history-bar {
+      display: flex;
+      gap: 2px;
+      height: 28px;
+      align-items: flex-end;
+    }
+    .history-tick {
+      flex: 1;
+      height: 22px;
+      border-radius: 1.5px;
+      background: var(--green);
+      position: relative;
+      transition: height 0.15s, opacity 0.15s;
+      cursor: pointer;
+    }
+    .history-tick:hover {
+      opacity: 0.7;
+      height: 28px;
+    }
+    .history-tick.degraded {
+      background: var(--yellow);
+    }
+    .history-tick.outage {
+      background: var(--red);
+    }
+    .history-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 0.68rem;
+      color: var(--text-dim);
+    }
+
+    /* Tooltip */
+    .tooltip {
+      position: absolute;
+      bottom: 34px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #24292f;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      z-index: 100;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      border: 1px solid #484f58;
+    }
+    .history-tick:hover .tooltip {
+      opacity: 1;
+    }
+
+    /* Incidents Section */
+    .incidents-section {
+      margin-top: 36px;
+    }
+    .incidents-header {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .incident-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .incident-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .incident-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    .incident-pill {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+    .incident-pill.resolved {
+      background: var(--green-subtle);
+      color: var(--green-light);
+      border: 1px solid var(--green-border);
+    }
+    .incident-pill.in_progress, .incident-pill.monitoring {
+      background: var(--yellow-subtle);
+      color: var(--yellow-light);
+      border: 1px solid var(--yellow-border);
+    }
+    .incident-pill.investigating {
+      background: var(--red-subtle);
+      color: var(--red-light);
+      border: 1px solid var(--red-border);
+    }
+    .incident-timeline {
+      border-left: 2px solid var(--border);
+      padding-left: 16px;
+      margin-left: 6px;
+    }
+    .timeline-item {
+      margin-bottom: 14px;
+      position: relative;
+    }
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+    .timeline-dot {
+      position: absolute;
+      left: -21px;
+      top: 4px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--blue);
+    }
+    .timeline-time {
+      font-size: 0.72rem;
+      color: var(--text-dim);
+      margin-bottom: 3px;
+    }
+    .timeline-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .no-incidents {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-radius);
+      padding: 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--bg-surface);
+      padding: 24px 0;
+      margin-top: auto;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-links {
+      display: flex;
+      gap: 16px;
+    }
+    .footer-links a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .status-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+      }
+      .banner-meta {
+        text-align: left;
+      }
+      .component-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-inner">
+      <a href="/" class="brand">
+        <div class="brand-logo">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div>
+          <div class="brand-title">
+            AkademiHub <span class="brand-badge">STATUS</span>
+          </div>
+          <div class="domain-tag">status.akademihub.id</div>
+        </div>
+      </a>
+      <div class="header-actions">
+        <button id="refreshBtn" class="refresh-btn" title="Muat ulang metrik">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/></svg>
+          <span id="countdown">15s</span>
+        </button>
+        <button id="themeToggle" class="theme-btn" title="Ubah tema Gelap/Terang">
+          <svg id="themeIcon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <!-- Status Hero Banner -->
+      <div id="statusBanner" class="status-banner operational">
+        <div class="banner-content">
+          <div class="banner-icon" id="bannerIcon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div class="banner-text">
+            <h1 id="bannerHeading">Semua Layanan Sistem Beroperasi Normal</h1>
+            <p id="bannerSub">Seluruh modul CBT, Core API, Database, dan Microservices berjalan optimal.</p>
+          </div>
+        </div>
+        <div class="banner-meta">
+          <div><span class="live-dot"></span> Pemantauan Aktif</div>
+          <div id="lastUpdatedText" style="margin-top: 4px;">Diperbarui: baru saja</div>
+        </div>
+      </div>
+
+      <!-- Metrics Strip -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-title">SLA Ketersediaan 90 Hari</div>
+          <div class="metric-val" id="metricUptime">99.98%</div>
+          <div class="metric-sub">Target SLA: 99.50%</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Rata-rata Latensi Sistem</div>
+          <div class="metric-val" id="metricLatency">-- ms</div>
+          <div class="metric-sub">Koneksi internal & pooler</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Komponen Aktif</div>
+          <div class="metric-val" id="metricComponents">11 / 11</div>
+          <div class="metric-sub">Microservices & worker</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-title">Insiden Terbuka</div>
+          <div class="metric-val" id="metricIncidents">0</div>
+          <div class="metric-sub">Tidak ada kendala aktif</div>
+        </div>
+      </div>
+
+      <!-- Component Groups Container -->
+      <div id="groupsContainer">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Incidents & Maintenance -->
+      <div class="incidents-section">
+        <div class="incidents-header">
+          <span>Riwayat Pemeliharaan & Insiden</span>
+        </div>
+        <div id="incidentsContainer">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <div>
+        © 2026 AkademiHub SRE Platform. Service Level Agreement 99.5% Komposit.
+      </div>
+      <div class="footer-links">
+        <a href="https://akademihub.id" target="_blank" rel="noopener">Portal Utama</a>
+        <a href="/api/status" target="_blank">Status API</a>
+        <a href="/api/summary.json" target="_blank">summary.json</a>
+        <a href="/health" target="_blank">Health</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let timer = 15;
+    let countdownInterval;
+
+    // Theme handling
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+    const savedTheme = localStorage.getItem('akademihub_status_theme') || 'dark';
+    html.className = savedTheme;
+
+    themeToggle.addEventListener('click', () => {
+      const nextTheme = html.classList.contains('dark') ? 'light' : 'dark';
+      html.className = nextTheme;
+      localStorage.setItem('akademihub_status_theme', nextTheme);
+    });
+
+    // Formatting helpers
+    function formatDate(iso) {
+      if (!iso) return '-';
+      const d = new Date(iso);
+      return d.toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }) + ' WIB';
+    }
+
+    function renderStatus(data) {
+      // Update Hero Banner
+      const banner = document.getElementById('statusBanner');
+      const bannerHeading = document.getElementById('bannerHeading');
+      const bannerSub = document.getElementById('bannerSub');
+      const bannerIcon = document.getElementById('bannerIcon');
+      const lastUpdatedText = document.getElementById('lastUpdatedText');
+
+      banner.className = `status-banner ${data.overall_status}`;
+      bannerHeading.textContent = data.description || 'Semua Layanan Sistem Beroperasi Normal';
+      
+      if (data.overall_status === 'operational') {
+        bannerSub.textContent = 'Seluruh modul CBT, Core API, Database, dan Microservices berjalan optimal.';
+        bannerIcon.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`;
+      } else if (data.overall_status === 'degraded') {
+        bannerSub.textContent = 'Beberapa modul pendukung sedang mengalami degradasi atau penundaan respons.';
+        bannerIcon.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>`;
+      } else {
+        bannerSub.textContent = 'Sedang terjadi gangguan konektivitas atau pemeliharaan darurat.';
+        bannerIcon.innerHTML = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`;
+      }
+
+      lastUpdatedText.textContent = `Diperbarui: ${new Date(data.last_updated).toLocaleTimeString('id-ID')} WIB`;
+
+      // Metrics
+      document.getElementById('metricUptime').textContent = `${(data.total_uptime_percent || 99.98).toFixed(2)}%`;
+      document.getElementById('metricLatency').textContent = `${data.avg_latency_ms || 12} ms`;
+      
+      const activeComps = (data.components || []).filter(c => c.status === 'operational').length;
+      document.getElementById('metricComponents').textContent = `${activeComps} / ${(data.components || []).length}`;
+
+      const activeIncidents = (data.incidents || []).filter(i => i.status !== 'resolved').length;
+      document.getElementById('metricIncidents').textContent = `${activeIncidents}`;
+
+      // Group Components
+      const groupsMap = {};
+      (data.components || []).forEach(comp => {
+        const grp = comp.group || 'Lainnya';
+        if (!groupsMap[grp]) groupsMap[grp] = [];
+        groupsMap[grp].push(comp);
+      });
+
+      const groupsContainer = document.getElementById('groupsContainer');
+      groupsContainer.innerHTML = '';
+
+      Object.keys(groupsMap).forEach(grpName => {
+        const items = groupsMap[grpName];
+        const sec = document.createElement('div');
+        sec.className = 'group-section';
+
+        let html = `
+          <div class="group-header">
+            <span>${grpName}</span>
+            <span class="group-count">${items.length} Layanan</span>
+          </div>
+        `;
+
+        items.forEach(c => {
+          const statusLabel = c.status === 'operational' ? 'Normal' : (c.status === 'degraded' ? 'Degradasi' : 'Gangguan');
+          const latencyHtml = c.latency_ms > 0 ? `<span class="latency-tag">${c.latency_ms} ms</span>` : '';
+
+          // Render 90 days ticks
+          let ticksHtml = '';
+          (c.daily_history || []).forEach(day => {
+            ticksHtml += `
+              <div class="history-tick ${day.status}">
+                <div class="tooltip">${day.date}: ${day.uptime.toFixed(1)}% (${day.status})</div>
+              </div>
+            `;
+          });
+
+          html += `
+            <div class="component-row">
+              <div class="component-main">
+                <div class="component-info">
+                  <h3>${c.name}</h3>
+                  <p>${c.description}</p>
+                </div>
+                <div class="component-status-wrap">
+                  ${latencyHtml}
+                  <div class="status-badge ${c.status}">
+                    <span class="status-indicator-dot"></span>
+                    ${statusLabel}
+                  </div>
+                </div>
+              </div>
+              <div class="history-wrap">
+                <div class="history-bar">${ticksHtml}</div>
+                <div class="history-labels">
+                  <span>90 hari lalu</span>
+                  <span>${(c.uptime_percent || 99.98).toFixed(2)}% uptime</span>
+                  <span>Hari ini</span>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+
+        sec.innerHTML = html;
+        groupsContainer.appendChild(sec);
+      });
+
+      // Render Incidents
+      const incContainer = document.getElementById('incidentsContainer');
+      if (!data.incidents || data.incidents.length === 0) {
+        incContainer.innerHTML = `<div class="no-incidents">Tidak ada catatan pemeliharaan atau insiden dalam 90 hari terakhir.</div>`;
+      } else {
+        incContainer.innerHTML = '';
+        data.incidents.forEach(inc => {
+          const card = document.createElement('div');
+          card.className = 'incident-card';
+
+          let updatesHtml = '';
+          (inc.updates || []).forEach(u => {
+            updatesHtml += `
+              <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-time">${formatDate(u.timestamp)} • <strong>${u.status.toUpperCase()}</strong></div>
+                <div class="timeline-text">${u.body}</div>
+              </div>
+            `;
+          });
+
+          card.innerHTML = `
+            <div class="incident-top">
+              <div class="incident-title">${inc.title}</div>
+              <span class="incident-pill ${inc.status}">${inc.status}</span>
+            </div>
+            <div class="incident-timeline">
+              ${updatesHtml}
+            </div>
+          `;
+          incContainer.appendChild(card);
+        });
+      }
+    }
+
+    async function fetchStatus() {
+      try {
+        const res = await fetch('/api/status?_t=' + Date.now());
+        if (res.ok) {
+          const data = await res.json();
+          renderStatus(data);
+        }
+      } catch (e) {
+        console.error('Gagal mengambil status:', e);
+      }
+    }
+
+    function startCountdown() {
+      timer = 15;
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        timer--;
+        document.getElementById('countdown').textContent = timer + 's';
+        if (timer <= 0) {
+          fetchStatus();
+          timer = 15;
+        }
+      }, 1000);
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+      fetchStatus();
+      startCountdown();
+    });
+
+    // Init
+    fetchStatus();
+    startCountdown();
+  </script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+status-page
+*.exe
+*.test
+.DS_Store
