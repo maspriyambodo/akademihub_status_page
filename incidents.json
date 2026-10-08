@@ -1,5 +1,31 @@
 [
   {
+    "id": "inc-2026-10-08-01",
+    "title": "Gangguan Distribusi Pesan WhatsApp Gateway",
+    "status": "resolved",
+    "impact": "minor",
+    "created_at": "2026-10-08T14:45:00+07:00",
+    "updated_at": "2026-10-08T16:00:00+07:00",
+    "resolved_at": "2026-10-08T16:00:00+07:00",
+    "updates": [
+      {
+        "timestamp": "2026-10-08T16:00:00+07:00",
+        "status": "resolved",
+        "body": "Kendala antrean dan distribusi pesan notifikasi WhatsApp berhasil dipulihkan. Seluruh pesan terkirim dan layanan beroperasi normal."
+      },
+      {
+        "timestamp": "2026-10-08T15:30:00+07:00",
+        "status": "monitoring",
+        "body": "Konektivitas sesi gateway WhatsApp telah stabil kembali. Memantau kelancaran pengiriman antrean notifikasi."
+      },
+      {
+        "timestamp": "2026-10-08T14:45:00+07:00",
+        "status": "investigating",
+        "body": "Terdeteksi perlambatan pengiriman notifikasi WhatsApp. Tim teknis sedang melakukan investigasi dan mitigasi pada konektivitas gateway."
+      }
+    ]
+  },
+  {
     "id": "inc-2026-09-08-01",
     "title": "Peningkatan Kapasitas & Optimasi Layanan Database",
     "status": "resolved",
